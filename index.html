@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HomeSwipe — Find Home. Effortlessly.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=32">
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-brand">HOMESWIPE</div>
+    <div class="loader-bar-wrap"><div id="loader-bar"></div></div>
+    <div id="loader-percent">0%</div>
+  </div>
+
+  <!-- Fixed header -->
+  <header class="site-header">
+    <nav>
+      <a href="#" class="nav-logo">
+        <img src="img/logo.png" alt="HomeSwipe logo" class="nav-logo-img">
+        <span>HOMESWIPE</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features" class="nav-scroll">Features</a></li>
+        <li><a href="#about"    class="nav-scroll">About</a></li>
+        <li><a href="#download" class="nav-scroll nav-cta">Download</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero: Three.js 3D scene -->
+  <section class="hero-standalone" id="hero">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <canvas id="particle-canvas"></canvas>
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-content">
+      <span class="section-label">001 / HomeSwipe</span>
+      <h1 class="hero-heading">
+        <span class="word">Find</span>
+        <span class="word">Home.</span>
+        <span class="word accent">Effortlessly.</span>
+      </h1>
+      <p class="hero-tagline">Browse thousands of properties. One swipe at a time.</p>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- Light bloom bg — sits behind canvas during the wipe transition -->
+  <div id="wipe-bg"></div>
+
+  <!-- Canvas: product video (fixed, revealed via circle-wipe) -->
+  <div class="canvas-wrap" id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <!-- Dark overlay for stats -->
+  <div id="dark-overlay"></div>
+
+  <!-- Marquee -->
+  <div class="marquee-wrap" id="marquee" data-scroll-speed="-28">
+    <div class="marquee-text">FIND YOUR HOME &nbsp;·&nbsp; SWIPE TO DISCOVER &nbsp;·&nbsp; HOMESWIPE &nbsp;·&nbsp; FIND YOUR HOME &nbsp;·&nbsp; SWIPE TO DISCOVER &nbsp;·&nbsp; HOMESWIPE &nbsp;·&nbsp; FIND YOUR HOME &nbsp;·&nbsp;</div>
+  </div>
+
+  <!-- Scroll container: 900vh — video plays here -->
+  <div id="scroll-container">
+
+    <section class="scroll-section section-content align-left"
+             data-enter="3" data-leave="26" data-animation="fade-up">
+      <div class="section-inner">
+        <span class="section-label">002 / Discover</span>
+        <h2 class="section-heading">House Hunting,<br>Simplified</h2>
+        <p class="section-body">Swipe through properties tailored to you. Save the ones you love and skip the rest in seconds.</p>
+      </div>
+    </section>
+
+    <section class="scroll-section section-content align-right"
+             data-enter="28" data-leave="51" data-animation="slide-right">
+      <div class="section-inner">
+        <span class="section-label">003 / Intelligence</span>
+        <h2 class="section-heading">Smarter the More<br>You Use It</h2>
+        <p class="section-body">The more you swipe, the better it gets. SwipeHomi learns your taste and keeps refining your feed.</p>
+      </div>
+    </section>
+
+    <section class="scroll-section section-content align-left"
+             data-enter="53" data-leave="76" data-animation="slide-left">
+      <div class="section-inner">
+        <span class="section-label">004 / Search</span>
+        <h2 class="section-heading">Save, Share<br>& Act Fast</h2>
+        <p class="section-body">Save your favourites, share listings with your partner, and reach out to agents — all in one place.</p>
+      </div>
+    </section>
+
+    <section class="scroll-section section-stats"
+             data-enter="83" data-leave="99"
+             data-mobile-enter="78" data-mobile-leave="99"
+             data-animation="stagger-up">
+      <div class="stats-grid">
+        <div class="stat">
+          <span class="stat-number" data-value="104" data-decimals="0">0</span>
+          <span class="stat-suffix">+</span>
+          <span class="stat-label">Users</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" data-value="4.9" data-decimals="1">0</span>
+          <span class="stat-suffix">★</span>
+          <span class="stat-label">App Store rating</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number" data-value="15353" data-decimals="0">0</span>
+          <span class="stat-suffix">+</span>
+          <span class="stat-label">Suburbs covered</span>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- end scroll-container -->
+
+  <!-- ── FEATURES ─────────────────────────────────────────── -->
+  <section id="features" class="page-section features-section">
+    <div class="page-section-inner">
+      <div class="page-section-header">
+        <span class="page-eyebrow">Everything you need</span>
+        <h2 class="page-heading">Built for the way<br>Australians find home.</h2>
+      </div>
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+          </div>
+          <h3 class="feature-title">Swipe to Discover</h3>
+          <p class="feature-body">Browse hundreds of curated listings with a single swipe. Like, skip, or save — instantly.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
+          </div>
+          <h3 class="feature-title">AI Property Matching</h3>
+          <p class="feature-body">The more you swipe, the smarter it gets. HomeSwipe learns your taste and serves better results every session.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg>
+          </div>
+          <h3 class="feature-title">Chat to Search</h3>
+          <p class="feature-body">Type "3-bed with a pool near good schools under $800k" and get exactly that. No filters. No fuss.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"/></svg>
+          </div>
+          <h3 class="feature-title">Save &amp; Compare</h3>
+          <p class="feature-body">Bookmark your favourites and compare them side by side — price, features, location — before you commit.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+          </div>
+          <h3 class="feature-title">Area Insights</h3>
+          <p class="feature-body">School zones, transport links, walkability, median prices — everything you need to know about a suburb, in one tap.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
+          </div>
+          <h3 class="feature-title">Instant Alerts</h3>
+          <p class="feature-body">New property that matches your wishlist? You'll know before anyone else — the moment it lists.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ──────────────────────────────────────────────── -->
+  <section id="about" class="page-section about-section">
+    <div class="page-section-inner">
+      <div class="page-section-header">
+        <span class="page-eyebrow about-eyebrow">Our Story</span>
+        <h2 class="page-heading about-heading">Built by two Australians<br>who hated house hunting.</h2>
+      </div>
+
+      <div class="founders-grid founders-compact">
+        <div class="founder-card founder-card-compact">
+          <div class="founder-avatar">H</div>
+          <h3 class="founder-name">Harry Gibson</h3>
+          <span class="founder-role">Co-Founder &amp; CEO</span>
+        </div>
+        <div class="founder-card founder-card-compact">
+          <div class="founder-avatar">W</div>
+          <h3 class="founder-name">Will</h3>
+          <span class="founder-role">Co-Founder &amp; CTO</span>
+        </div>
+      </div>
+
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Found my apartment in 3 days. The AI actually understands what I want — it felt like it was reading my mind."</p>
+          <span class="review-author">Sarah M. &nbsp;·&nbsp; Sydney</span>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"So much better than endless scrolling on the old sites. Swiping through listings is genuinely fun."</p>
+          <span class="review-author">James T. &nbsp;·&nbsp; Melbourne</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DOWNLOAD ───────────────────────────────────────────── -->
+  <section id="download" class="page-section cta-page">
+    <div class="cta-orb cta-orb-1"></div>
+    <div class="cta-orb cta-orb-2"></div>
+    <div class="cta-orb cta-orb-3"></div>
+    <div class="cta-page-inner">
+      <p class="cta-eyebrow">Available Now on iOS</p>
+      <h2 class="cta-page-heading">Your home<br>is waiting.</h2>
+      <p class="cta-page-sub">Join thousands of Australians finding homes they love with HomeSwipe.</p>
+      <a href="https://apps.apple.com/us/app/swipehomi/id6763982750" class="cta-appstore-btn">
+        <svg class="apple-icon" viewBox="0 0 170 170" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.2-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.93.21-9.84-1.96-14.75-6.52-3.13-2.73-7.04-7.41-11.73-14.04-5.03-7.08-9.17-15.29-12.41-24.65C.27 110.37.27 100.57.27 90.09c0-10.86 2.35-20.22 7.05-28.07 3.69-6.3 8.61-11.27 14.75-14.92s12.79-5.51 19.95-5.63c3.91 0 9.05 1.21 15.43 3.59 6.36 2.39 10.45 3.6 12.24 3.6 1.34 0 5.88-1.42 13.57-4.24 7.27-2.62 13.41-3.7 18.44-3.27 13.63 1.1 23.87 6.47 30.68 16.15-12.19 7.39-18.22 17.73-18.1 31 .11 10.34 3.86 18.94 11.23 25.77 3.34 3.17 7.07 5.62 11.22 7.36-.9 2.61-1.85 5.11-2.86 7.51zM119.11 7.24c0 8.1-2.96 15.67-8.86 22.67-7.12 8.32-15.73 13.13-25.07 12.37a25.3 25.3 0 0 1-.19-3.07c0-7.78 3.39-16.1 9.4-22.91 3-3.45 6.82-6.31 11.45-8.6 4.62-2.25 8.99-3.5 13.1-3.71.12 1.08.17 2.17.17 3.25z"/>
+        </svg>
+        <div class="btn-text">
+          <span class="btn-sub">Download on the</span>
+          <strong class="btn-main">App Store</strong>
+        </div>
+      </a>
+      <p class="cta-fine">Free · iOS 16+ · Australia</p>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
+  <script src="js/hero3d.js?v=3"></script>
+  <script src="js/particles.js?v=4"></script>
+  <script src="js/app.js?v=14"></script>
+</body>
+</html>

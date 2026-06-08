@@ -17,6 +17,7 @@ html {
   overscroll-behavior-y: none;
   touch-action: pan-y;
   height: 100%;
+  background: #050d1a; /* matches last section so any overscroll gap is invisible */
 }
 body {
   background: var(--bg-dark);
@@ -652,6 +653,7 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
   display: flex; align-items: center; justify-content: center;
   height: 100vh;
   position: relative; overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Dot-grid texture */

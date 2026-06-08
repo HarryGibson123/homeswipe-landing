@@ -596,28 +596,32 @@ function initSectionSnap() {
     // Touch events only fire while a finger is on screen, so a fast fling
     // carries the page through the zone with no touchstart/touchend at all.
     // This scroll listener catches that case and forces a snap to #features
-    // the moment it enters the viewport while scrolling down, regardless of
-    // velocity. It uses a one-shot flag so it fires once per approach, not
-    // on every frame while the section is visible.
-    const featuresEl  = sections[0]; // #features is always the first gate
-    let prevScrollY   = window.scrollY;
-    let hasLockedEntry = false;
+    // the moment the video scroll container has fully passed, regardless of
+    // scroll velocity.
+    const featuresEl    = sections[0];
+    const scrollContainerEl = document.getElementById('scroll-container');
+    let prevScrollY     = window.scrollY;
+    let hasLockedEntry  = false;
 
     window.addEventListener('scroll', () => {
-      const currentY    = window.scrollY;
+      const currentY      = window.scrollY;
       const scrollingDown = currentY > prevScrollY;
       prevScrollY = currentY;
 
       const featTop = featuresEl.getBoundingClientRect().top;
 
-      // Re-arm: user has scrolled back to a full viewport above #features
+      // Re-arm: user scrolled back above #features (gate resets for next approach)
       if (featTop > lockedVH) hasLockedEntry = false;
 
-      // Hard-lock: #features is crossing into view on a downward scroll
+      // Guard: don't fire while the video scroll container is still in view.
+      // getBoundingClientRect().bottom > 0 means it hasn't fully scrolled past.
+      // This prevents the gate from interrupting video playback.
+      if (scrollContainerEl.getBoundingClientRect().bottom > 0) return;
+
+      // Hard-lock: video is done, #features should be landing now
       if (scrollingDown && !hasLockedEntry && !inZone && !snapping) {
-        // Range: top of #features is between 60% viewport (just entering)
-        // and −20% viewport (slightly overshot) — catches any scroll speed
-        if (featTop <= lockedVH * 0.6 && featTop > -(lockedVH * 0.2)) {
+        // featTop in (−80% … +10% viewport) = just past or slightly overshot
+        if (featTop <= lockedVH * 0.1 && featTop > -(lockedVH * 0.8)) {
           hasLockedEntry = true;
           activeIdx      = 0;
           inZone         = true;

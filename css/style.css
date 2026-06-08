@@ -352,6 +352,11 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
   display: none;
 }
 
+/* ── Responsive content variants (mobile / desktop text swaps) ── */
+.m-only { display: none; }  /* hidden on desktop, shown by mobile media query */
+.d-only { display: inline; } /* shown on desktop, hidden by mobile media query */
+.m-hide { display: block; }  /* shown on desktop, hidden by mobile media query */
+
 .cta-eyebrow {
   font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--accent); margin-bottom: 24px;
@@ -812,6 +817,11 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
+  /* Flip content variants for mobile */
+  .m-only { display: inline; }
+  .d-only { display: none; }
+  .m-hide { display: none !important; }
+
   /* Bug 1 fix: use dvh so height tracks the visual viewport (toolbar in/out) */
   .hero-standalone { height: 100dvh; }
 

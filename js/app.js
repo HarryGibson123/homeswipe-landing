@@ -479,42 +479,93 @@ function initNavHide() {
   });
 }
 
-// ── Snap to page sections when they enter the viewport ────────────────────
+// ── Mandatory snap through Features → About → Download ────────────────────
 function initSectionSnap() {
+  const sections = ['#features', '#about', '#download']
+    .map(id => document.querySelector(id)).filter(Boolean);
+
+  if (!lenis) {
+    // ── Mobile: swipe-controlled, one section at a time, no skipping ─────
+    let snapping  = false;
+    let inZone    = false;
+    let activeIdx = -1;
+    let startY    = 0;
+
+    const sTop = (el) => Math.round(el.getBoundingClientRect().top + window.scrollY);
+
+    const nearestIdx = () => {
+      const y = window.scrollY;
+      let best = -1, bestDist = Infinity;
+      sections.forEach((s, i) => {
+        const d = Math.abs(y - sTop(s));
+        if (d < bestDist) { bestDist = d; best = i; }
+      });
+      return bestDist < lockedVH * 0.65 ? best : -1;
+    };
+
+    const snapTo = (idx) => {
+      if (snapping || idx < 0 || idx >= sections.length) return;
+      snapping  = true;
+      activeIdx = idx;
+      window.scrollTo({ top: sTop(sections[idx]), behavior: 'smooth' });
+      setTimeout(() => { snapping = false; }, 800);
+    };
+
+    // Single shared touchmove handler — handles both zone lock and boundary lock
+    window.addEventListener('touchstart', (e) => {
+      startY    = e.touches[0].clientY;
+      activeIdx = nearestIdx();
+      inZone    = activeIdx >= 0;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (inZone) {
+        e.preventDefault(); // block all native scroll inside snap zone
+        return;
+      }
+      // Outside snap zone: only block at page boundaries
+      const dy  = e.touches[0].clientY - startY;
+      const top = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if ((top <= 0 && dy > 0) || (top >= max - 2 && dy < 0)) e.preventDefault();
+    }, { passive: false });
+
+    window.addEventListener('touchend', (e) => {
+      if (!inZone || snapping) return;
+      const dy = startY - e.changedTouches[0].clientY; // +ve = swipe up = advance
+
+      if (Math.abs(dy) < 28) { snapTo(activeIdx >= 0 ? activeIdx : 0); return; }
+
+      if (dy > 0) {
+        snapTo(activeIdx < sections.length - 1 ? activeIdx + 1 : activeIdx);
+      } else {
+        snapTo(activeIdx > 0 ? activeIdx - 1 : activeIdx);
+      }
+    }, { passive: true });
+
+    return;
+  }
+
+  // ── Desktop: Lenis-based snap ─────────────────────────────────────────
   let locked = false;
 
   const lockOn = (el) => {
     if (locked || navScrolling) return;
     locked = true;
-
-    if (lenis) {
-      // Desktop: use Lenis for buttery smooth snap
-      lenis.scrollTo(el, {
-        offset: 0,
-        duration: 0.35,
-        easing: (t) => 1 - Math.pow(1 - t, 3),
-        lock: true,
-        force: true,
-        onComplete: () => {
-          lenis.stop();
-          setTimeout(() => { lenis.start(); locked = false; }, 800);
-        },
-      });
-    } else {
-      // Mobile: native smooth scroll to section top
-      const top = el.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({ top, behavior: 'smooth' });
-      setTimeout(() => { locked = false; }, 800);
-    }
+    lenis.scrollTo(el, {
+      offset: 0, duration: 0.35,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
+      lock: true, force: true,
+      onComplete: () => {
+        lenis.stop();
+        setTimeout(() => { lenis.start(); locked = false; }, 800);
+      },
+    });
   };
 
-  ['#features', '#about', '#download'].forEach((id) => {
-    const el = document.querySelector(id);
-    if (!el) return;
+  sections.forEach((el) => {
     ScrollTrigger.create({
-      trigger: el,
-      start: 'top 90%',
-      end: 'bottom 10%',
+      trigger: el, start: 'top 90%', end: 'bottom 10%',
       onEnter:     () => lockOn(el),
       onEnterBack: () => lockOn(el),
     });
@@ -615,27 +666,6 @@ function initScene() {
   initButtonEffects();
 
   ScrollTrigger.refresh();
-
-  // ── Mobile: hard-lock elastic overscroll ──────────────────────────────────
-  // iOS ignores overscroll-behavior in many cases, so we block it in JS.
-  // We prevent touchmove default only when the user is already at the very
-  // top or bottom of the page — this stops the whole page lifting/dropping.
-  if (isMobile) {
-    let touchStartY = 0;
-
-    window.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    window.addEventListener('touchmove', (e) => {
-      const dy = e.touches[0].clientY - touchStartY;
-      const scrollTop = window.scrollY;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const atTop    = scrollTop <= 0   && dy > 0; // finger dragging down at top
-      const atBottom = scrollTop >= maxScroll - 2 && dy < 0; // finger dragging up at bottom
-      if (atTop || atBottom) e.preventDefault();
-    }, { passive: false });
-  }
 }
 
 preload();

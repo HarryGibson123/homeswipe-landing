@@ -479,13 +479,12 @@ function initNavHide() {
   });
 }
 
-// ── Mandatory snap through Features → About → Download ────────────────────
+// ── Mandatory snap — Features → About → Download, one at a time ───────────
 function initSectionSnap() {
   const sections = ['#features', '#about', '#download']
     .map(id => document.querySelector(id)).filter(Boolean);
 
   if (!lenis) {
-    // ── Mobile: swipe-controlled, one section at a time, no skipping ─────
     let snapping  = false;
     let inZone    = false;
     let activeIdx = -1;
@@ -493,6 +492,7 @@ function initSectionSnap() {
 
     const sTop = (el) => Math.round(el.getBoundingClientRect().top + window.scrollY);
 
+    // Find which section we're closest to; -1 if too far from all of them
     const nearestIdx = () => {
       const y = window.scrollY;
       let best = -1, bestDist = Infinity;
@@ -503,27 +503,59 @@ function initSectionSnap() {
       return bestDist < lockedVH * 0.65 ? best : -1;
     };
 
+    // Smooth scroll to section; detect stop via scroll events, not fixed timer
     const snapTo = (idx) => {
-      if (snapping || idx < 0 || idx >= sections.length) return;
+      if (idx < 0 || idx >= sections.length) return;
       snapping  = true;
       activeIdx = idx;
-      window.scrollTo({ top: sTop(sections[idx]), behavior: 'smooth' });
-      setTimeout(() => { snapping = false; }, 800);
+      const target = sTop(sections[idx]);
+      window.scrollTo({ top: target, behavior: 'smooth' });
+
+      let stopTimer;
+      const onScroll = () => {
+        clearTimeout(stopTimer);
+        stopTimer = setTimeout(() => {
+          window.removeEventListener('scroll', onScroll);
+          snapping = false;
+        }, 80);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      // Hard fallback — never stay locked more than 1 s
+      setTimeout(() => {
+        window.removeEventListener('scroll', onScroll);
+        snapping = false;
+      }, 1000);
     };
 
-    // Single shared touchmove handler — handles both zone lock and boundary lock
     window.addEventListener('touchstart', (e) => {
-      startY    = e.touches[0].clientY;
-      activeIdx = nearestIdx();
-      inZone    = activeIdx >= 0;
+      startY = e.touches[0].clientY;
+
+      if (snapping) {
+        inZone = true; // keep blocking native scroll during animation
+        return;
+      }
+
+      const idx = nearestIdx();
+      inZone    = idx >= 0;
+      activeIdx = idx;
+
+      if (inZone) {
+        // Kill any scroll momentum by instantly locking to the nearest section.
+        // This stops a fast fling from the video section overshooting into
+        // the wrong snap target before the first touch even registers.
+        const target = sTop(sections[activeIdx]);
+        if (Math.abs(window.scrollY - target) > 6) {
+          window.scrollTo(0, target); // instant, no animation
+        }
+      }
     }, { passive: true });
 
     window.addEventListener('touchmove', (e) => {
       if (inZone) {
-        e.preventDefault(); // block all native scroll inside snap zone
+        e.preventDefault(); // block ALL native scroll while in snap zone
         return;
       }
-      // Outside snap zone: only block at page boundaries
+      // Outside zone: only block rubberbanding at page top/bottom
       const dy  = e.touches[0].clientY - startY;
       const top = window.scrollY;
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -532,15 +564,19 @@ function initSectionSnap() {
 
     window.addEventListener('touchend', (e) => {
       if (!inZone || snapping) return;
-      const dy = startY - e.changedTouches[0].clientY; // +ve = swipe up = advance
+      const swipe = startY - e.changedTouches[0].clientY; // +ve = swiped up = next
 
-      if (Math.abs(dy) < 28) { snapTo(activeIdx >= 0 ? activeIdx : 0); return; }
-
-      if (dy > 0) {
-        snapTo(activeIdx < sections.length - 1 ? activeIdx + 1 : activeIdx);
-      } else {
-        snapTo(activeIdx > 0 ? activeIdx - 1 : activeIdx);
+      if (Math.abs(swipe) < 30) {
+        // Tap / tiny drag — re-lock to current section
+        snapTo(activeIdx >= 0 ? activeIdx : 0);
+        return;
       }
+
+      // Move exactly one section in swipe direction — no skipping possible
+      const next = swipe > 0
+        ? Math.min(activeIdx + 1, sections.length - 1)
+        : Math.max(activeIdx - 1, 0);
+      snapTo(next);
     }, { passive: true });
 
     return;
@@ -548,7 +584,6 @@ function initSectionSnap() {
 
   // ── Desktop: Lenis-based snap ─────────────────────────────────────────
   let locked = false;
-
   const lockOn = (el) => {
     if (locked || navScrolling) return;
     locked = true;
@@ -562,7 +597,6 @@ function initSectionSnap() {
       },
     });
   };
-
   sections.forEach((el) => {
     ScrollTrigger.create({
       trigger: el, start: 'top 90%', end: 'bottom 10%',

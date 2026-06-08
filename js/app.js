@@ -121,12 +121,15 @@ async function preload() {
 // ── Lenis smooth scroll ────────────────────────────────────────────────────
 let lenis;
 function initLenis() {
+  if (isMobile) {
+    // On mobile, skip Lenis entirely — native scroll is stable and ScrollTrigger handles it
+    return;
+  }
   lenis = new Lenis({
     duration: 0.75,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
     wheelMultiplier: 1.2,
-    ...(isMobile ? { smoothTouch: false, touchMultiplier: 1 } : {}),
   });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
@@ -146,6 +149,8 @@ function initNav() {
         easing: (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
         onComplete: () => { navScrolling = false; },
       });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
 
@@ -160,6 +165,8 @@ function initNav() {
           easing: (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
           onComplete: () => { navScrolling = false; },
         });
+      } else if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
       }
     });
   });

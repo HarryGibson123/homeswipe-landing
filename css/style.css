@@ -15,7 +15,8 @@ html {
   scroll-behavior: auto;
   overscroll-behavior: none;
   overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: auto;
+  touch-action: pan-y;
+  height: 100%;
 }
 body {
   background: var(--bg-dark);
@@ -24,6 +25,8 @@ body {
   overflow-x: hidden;
   overscroll-behavior: none;
   overscroll-behavior-y: none;
+  touch-action: pan-y;
+  min-height: 100%;
 }
 
 /* ── Loader ── */

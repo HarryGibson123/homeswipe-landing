@@ -126,7 +126,7 @@ function initLenis() {
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
     wheelMultiplier: 1.2,
-    ...(isMobile ? { touchMultiplier: 0.18, smoothTouch: true } : {}),
+    ...(isMobile ? { smoothTouch: false, touchMultiplier: 1 } : {}),
   });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
@@ -199,6 +199,10 @@ function initPageSectionReveals() {
   gsap.from('.founder-card', {
     y: 50, opacity: 0, stagger: 0.15, duration: 0.9, ease: 'power3.out',
     scrollTrigger: { trigger: '.founders-grid', start: 'top 80%', toggleActions: 'play none none none' }
+  });
+  gsap.from('.review-card', {
+    y: 40, opacity: 0, stagger: 0.12, duration: 0.85, ease: 'power3.out',
+    scrollTrigger: { trigger: '.reviews-grid', start: 'top 85%', toggleActions: 'play none none none' }
   });
   gsap.from('.mission-block', {
     x: -40, opacity: 0, duration: 0.9, ease: 'power3.out',
@@ -500,7 +504,9 @@ function initSectionSnap() {
     ScrollTrigger.create({
       trigger: el,
       start: 'top 90%',
-      onEnter: () => lockOn(el),
+      end: 'bottom 10%',
+      onEnter:     () => lockOn(el),
+      onEnterBack: () => lockOn(el),
     });
   });
 }

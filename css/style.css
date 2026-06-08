@@ -1118,17 +1118,17 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
   .cta-page-inner { padding: 60px 6vw; }
   .cta-page-heading { font-size: clamp(2.5rem, 10vw, 4rem); }
 
-  /* ── Bug 2 fix: CSS scroll-snap for the three end sections ───────────── */
-  /* proximity = only snaps when already close; mandatory would trap scroll  */
+  /* Scroll-snap for the three end sections (proximity = won't trap upward scroll) */
   body {
     scroll-snap-type: y proximity;
-    overscroll-behavior-y: contain; /* contain not none — lets snap logic work */
+    /* overscroll-behavior-y intentionally NOT set here — falls through to the
+       global "none" rule above, which prevents rubber-band without trapping */
   }
   #features,
   #about,
   #download {
     scroll-snap-align: start;
-    scroll-snap-stop: normal; /* never 'always' — that is what causes stuck-scroll */
+    scroll-snap-stop: normal; /* never 'always' */
   }
 }
 

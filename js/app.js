@@ -552,10 +552,17 @@ function initSectionSnap() {
 
     window.addEventListener('touchmove', (e) => {
       if (inZone) {
-        e.preventDefault(); // block ALL native scroll while in snap zone
+        const fingerDy = e.touches[0].clientY - startY; // +ve = finger moving down = scroll up
+        // If on the first snap section and the user is swiping UP (scroll up),
+        // release the zone so native scroll carries them back into the page.
+        if (activeIdx === 0 && fingerDy > 0) {
+          inZone = false;
+          return; // no preventDefault — let the browser scroll upward naturally
+        }
+        e.preventDefault(); // block native scroll for all other in-zone moves
         return;
       }
-      // Outside zone: only block rubberbanding at page top/bottom
+      // Outside zone: only block rubber-banding at absolute page boundaries
       const dy  = e.touches[0].clientY - startY;
       const top = window.scrollY;
       const max = document.documentElement.scrollHeight - window.innerHeight;

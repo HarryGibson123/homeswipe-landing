@@ -523,12 +523,7 @@ function initSectionSnap() {
 
 // ── Mobile scene — no video scrubbing, native scroll ─────────────────────
 function initMobileScene() {
-  // Fix iOS --vh custom property
-  function setVh() {
-    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-  }
-  setVh();
-  window.addEventListener('resize', setVh);
+  setSectionHeights();
 
   // Smooth nav scroll for anchor links
   initNav();
@@ -555,29 +550,43 @@ function initMobileScene() {
 }
 
 // ── Init all ───────────────────────────────────────────────────────────────
+// Use visualViewport when available — it reflects the true visible area on
+// iOS (excludes the address bar / keyboard), so sections stay pixel-perfect.
+function getVH() {
+  return window.visualViewport ? window.visualViewport.height : window.innerHeight;
+}
+
 function setSectionHeights() {
-  const h = window.innerHeight + 'px';
+  const h = getVH();
+  document.documentElement.style.setProperty('--vh', `${h * 0.01}px`);
   ['features', 'about', 'download'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.height = h;
+    if (el) el.style.height = h + 'px';
   });
+  // Also keep hero and scroll sections in sync
+  const hero = document.getElementById('hero');
+  if (hero) hero.style.height = h + 'px';
 }
 
 function initScene() {
   gsap.registerPlugin(ScrollTrigger);
   resizeCanvas();
-  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-  setSectionHeights();
+  setSectionHeights(); // sets --vh + all section heights in one place
+
+  // Respond to both window resize (desktop) and visualViewport resize (iOS safari)
   let resizeTimer;
-  window.addEventListener('resize', () => {
+  const onResize = () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       resizeCanvas();
-      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
       setSectionHeights();
       ScrollTrigger.refresh();
-    }, 120);
-  });
+    }, 80);
+  };
+  window.addEventListener('resize', onResize, { passive: true });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', onResize, { passive: true });
+  }
 
   initLenis();
   initNav();

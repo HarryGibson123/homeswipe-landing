@@ -885,9 +885,14 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
   .nav-links a { font-size: 0.7rem; }
   .nav-cta { padding: 5px 10px !important; font-size: 0.7rem !important; }
 
-  /* Page sections */
-  .page-section       { height: auto; min-height: calc(var(--vh, 1vh) * 100); }
-  .page-section-inner { padding: 80px 4vw 16px; overflow: visible; }
+  /* Page sections — exact viewport height, no bigger no smaller */
+  .page-section {
+    height: calc(var(--vh, 1vh) * 100) !important;
+    min-height: unset !important;
+    max-height: calc(var(--vh, 1vh) * 100) !important;
+    overflow: hidden !important;
+  }
+  .page-section-inner { padding: 80px 4vw 16px; overflow: hidden; }
   .founders-grid      { grid-template-columns: 1fr; }
   .page-heading       { font-size: clamp(1.4rem, 5.5vw, 2rem); margin-bottom: 6px; }
   .page-eyebrow       { margin-bottom: 2px; }
@@ -1105,7 +1110,11 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
   #about .mission-attr { color: rgba(147,197,253,0.55); }
 
   /* CTA */
-  .cta-page       { height: auto; min-height: calc(var(--vh, 1vh) * 100); }
+  .cta-page {
+    height: calc(var(--vh, 1vh) * 100) !important;
+    min-height: unset !important;
+    max-height: calc(var(--vh, 1vh) * 100) !important;
+  }
   .cta-page-inner { padding: 60px 6vw; }
   .cta-page-heading { font-size: clamp(2.5rem, 10vw, 4rem); }
 }

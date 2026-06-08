@@ -812,8 +812,8 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
-  /* Fix iOS 100vh */
-  .hero-standalone { height: calc(var(--vh, 1vh) * 100); }
+  /* Bug 1 fix: use dvh so height tracks the visual viewport (toolbar in/out) */
+  .hero-standalone { height: 100dvh; }
 
   /* Hide loader entirely on mobile */
   #loader { display: none !important; }
@@ -885,11 +885,11 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
   .nav-links a { font-size: 0.7rem; }
   .nav-cta { padding: 5px 10px !important; font-size: 0.7rem !important; }
 
-  /* Page sections — exact viewport height, no bigger no smaller */
+  /* Page sections — exact visual viewport height */
   .page-section {
-    height: calc(var(--vh, 1vh) * 100) !important;
+    height: 100dvh !important;
     min-height: unset !important;
-    max-height: calc(var(--vh, 1vh) * 100) !important;
+    max-height: 100dvh !important;
     overflow: hidden !important;
   }
   .page-section-inner { padding: 80px 4vw 16px; overflow: hidden; }
@@ -1111,12 +1111,25 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
 
   /* CTA */
   .cta-page {
-    height: calc(var(--vh, 1vh) * 100) !important;
+    height: 100dvh !important;
     min-height: unset !important;
-    max-height: calc(var(--vh, 1vh) * 100) !important;
+    max-height: 100dvh !important;
   }
   .cta-page-inner { padding: 60px 6vw; }
   .cta-page-heading { font-size: clamp(2.5rem, 10vw, 4rem); }
+
+  /* ── Bug 2 fix: CSS scroll-snap for the three end sections ───────────── */
+  /* proximity = only snaps when already close; mandatory would trap scroll  */
+  body {
+    scroll-snap-type: y proximity;
+    overscroll-behavior-y: contain; /* contain not none — lets snap logic work */
+  }
+  #features,
+  #about,
+  #download {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal; /* never 'always' — that is what causes stuck-scroll */
+  }
 }
 
 /* ── Desktop About — Premium Redesign ─────────────────────────────── */

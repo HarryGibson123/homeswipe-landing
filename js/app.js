@@ -523,6 +523,7 @@ function initSectionSnap() {
 
 // ── Mobile scene — no video scrubbing, native scroll ─────────────────────
 function initMobileScene() {
+  if (!lockedVH) measureAndLock();
   setSectionHeights();
 
   // Smooth nav scroll for anchor links
@@ -550,43 +551,51 @@ function initMobileScene() {
 }
 
 // ── Init all ───────────────────────────────────────────────────────────────
-// Use visualViewport when available — it reflects the true visible area on
-// iOS (excludes the address bar / keyboard), so sections stay pixel-perfect.
-function getVH() {
-  return window.visualViewport ? window.visualViewport.height : window.innerHeight;
+// Height is locked once at load and only re-locked when the WIDTH changes
+// (device rotation / desktop resize). Height-only changes from the iOS
+// address bar showing/hiding are ignored — they are what cause mid-scroll
+// glitching when sections resize under the user's finger.
+let lockedVH = 0;
+let lockedVW = 0;
+
+function measureAndLock() {
+  lockedVH = window.innerHeight;
+  lockedVW = window.innerWidth;
+  document.documentElement.style.setProperty('--vh', `${lockedVH * 0.01}px`);
 }
 
 function setSectionHeights() {
-  const h = getVH();
-  document.documentElement.style.setProperty('--vh', `${h * 0.01}px`);
+  if (!lockedVH) measureAndLock();
+  const h = lockedVH;
   ['features', 'about', 'download'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.height = h + 'px';
   });
-  // Also keep hero and scroll sections in sync
   const hero = document.getElementById('hero');
   if (hero) hero.style.height = h + 'px';
 }
 
 function initScene() {
   gsap.registerPlugin(ScrollTrigger);
+  measureAndLock();   // snapshot vh/vw before any scroll happens
   resizeCanvas();
-  setSectionHeights(); // sets --vh + all section heights in one place
+  setSectionHeights();
 
-  // Respond to both window resize (desktop) and visualViewport resize (iOS safari)
+  // Only re-lock when the WIDTH changes — that means genuine rotation or
+  // desktop resize. Height-only changes (iOS address bar) are ignored.
   let resizeTimer;
-  const onResize = () => {
+  window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
+      const newVW = window.innerWidth;
       resizeCanvas();
-      setSectionHeights();
+      if (Math.abs(newVW - lockedVW) > 10) {
+        measureAndLock();
+        setSectionHeights();
+      }
       ScrollTrigger.refresh();
     }, 80);
-  };
-  window.addEventListener('resize', onResize, { passive: true });
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', onResize, { passive: true });
-  }
+  }, { passive: true });
 
   initLenis();
   initNav();

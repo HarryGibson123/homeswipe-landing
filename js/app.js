@@ -479,29 +479,33 @@ function initNavHide() {
   });
 }
 
-// ── Pause on each end page for 2 s before allowing further scroll ─────────
+// ── Snap to page sections when they enter the viewport ────────────────────
 function initSectionSnap() {
-  if (!lenis) return; // mobile uses native scroll — no snap needed
   let locked = false;
 
   const lockOn = (el) => {
     if (locked || navScrolling) return;
     locked = true;
 
-    lenis.scrollTo(el, {
-      offset: 0,
-      duration: 0.35,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
-      lock: true,
-      force: true,
-      onComplete: () => {
-        lenis.stop();
-        setTimeout(() => {
-          lenis.start();
-          locked = false;
-        }, 800);
-      },
-    });
+    if (lenis) {
+      // Desktop: use Lenis for buttery smooth snap
+      lenis.scrollTo(el, {
+        offset: 0,
+        duration: 0.35,
+        easing: (t) => 1 - Math.pow(1 - t, 3),
+        lock: true,
+        force: true,
+        onComplete: () => {
+          lenis.stop();
+          setTimeout(() => { lenis.start(); locked = false; }, 800);
+        },
+      });
+    } else {
+      // Mobile: native smooth scroll to section top
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top, behavior: 'smooth' });
+      setTimeout(() => { locked = false; }, 800);
+    }
   };
 
   ['#features', '#about', '#download'].forEach((id) => {

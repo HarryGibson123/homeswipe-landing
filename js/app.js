@@ -590,6 +590,27 @@ function initScene() {
   initButtonEffects();
 
   ScrollTrigger.refresh();
+
+  // ── Mobile: hard-lock elastic overscroll ──────────────────────────────────
+  // iOS ignores overscroll-behavior in many cases, so we block it in JS.
+  // We prevent touchmove default only when the user is already at the very
+  // top or bottom of the page — this stops the whole page lifting/dropping.
+  if (isMobile) {
+    let touchStartY = 0;
+
+    window.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      const dy = e.touches[0].clientY - touchStartY;
+      const scrollTop = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const atTop    = scrollTop <= 0   && dy > 0; // finger dragging down at top
+      const atBottom = scrollTop >= maxScroll - 2 && dy < 0; // finger dragging up at bottom
+      if (atTop || atBottom) e.preventDefault();
+    }, { passive: false });
+  }
 }
 
 preload();

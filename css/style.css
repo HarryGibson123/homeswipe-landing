@@ -1132,6 +1132,184 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
     scroll-snap-align: start;
     scroll-snap-stop: normal; /* never 'always' */
   }
+
+  /* ── Mobile CTA: dramatic redesign ──────────────────────────────────── */
+
+  /* Deep-space background — intense central bottom glow */
+  #download.page-section {
+    background:
+      radial-gradient(ellipse 160% 70% at 50% 120%, rgba(26,86,219,0.85) 0%, rgba(26,86,219,0.3) 38%, transparent 60%),
+      radial-gradient(ellipse 80% 55% at 85% 0%,   rgba(99,102,241,0.4)  0%, transparent 52%),
+      radial-gradient(ellipse 60% 45% at 10% 25%,  rgba(59,130,246,0.18) 0%, transparent 55%),
+      #020b1a;
+  }
+
+  /* Star-field dot grid */
+  #download.page-section::before {
+    background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size: 38px 38px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, black 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, black 30%, transparent 100%);
+  }
+
+  /* Override existing orbs for more dramatic mobile placement */
+  #download .cta-orb-1 {
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, rgba(26,86,219,0.55) 0%, rgba(59,130,246,0.15) 45%, transparent 68%);
+    bottom: -200px; left: 50%; top: auto; right: auto;
+    transform: translateX(-50%);
+    filter: blur(55px);
+    animation: ctaOrb1 13s ease-in-out infinite alternate;
+  }
+  #download .cta-orb-2 {
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(99,102,241,0.55) 0%, transparent 65%);
+    top: -40px; right: -60px; bottom: auto; left: auto;
+    filter: blur(48px);
+    animation: ctaOrb2 9s ease-in-out infinite alternate;
+  }
+  #download .cta-orb-3 {
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 65%);
+    top: 30%; left: -40px; right: auto;
+    filter: blur(44px);
+    animation: ctaOrb3 16s ease-in-out infinite alternate;
+  }
+
+  /* Large atmospheric glow ring behind heading */
+  .cta-glow-ring {
+    position: absolute;
+    width: 380px; height: 380px;
+    border-radius: 50%;
+    border: 1px solid rgba(147,197,253,0.1);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -52%);
+    background: radial-gradient(circle, rgba(26,86,219,0.12) 0%, transparent 70%);
+    box-shadow: 0 0 80px rgba(26,86,219,0.2), inset 0 0 60px rgba(26,86,219,0.08);
+    pointer-events: none; z-index: 0;
+    animation: ctaOrb3 14s ease-in-out infinite alternate;
+  }
+
+  /* Inner section layout */
+  #download .cta-page-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 48px 7vw 36px;
+    position: relative; z-index: 1;
+    height: 100%;
+  }
+
+  /* App icon + halo */
+  .cta-icon-wrap {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+  }
+  .cta-icon-halo {
+    position: absolute;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(26,86,219,0.45) 0%, transparent 70%);
+    filter: blur(16px);
+    animation: ctaOrb3 4s ease-in-out infinite alternate;
+  }
+  .cta-icon-img {
+    width: 64px; height: 64px;
+    object-fit: contain;
+    border-radius: 16px;
+    position: relative; z-index: 1;
+    filter: drop-shadow(0 4px 20px rgba(26,86,219,0.6));
+  }
+
+  /* Eyebrow pill */
+  #download .cta-eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: rgba(147,197,253,0.95);
+    background: rgba(26,86,219,0.14);
+    border: 1px solid rgba(147,197,253,0.22);
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 0;
+  }
+
+  /* Heading — large and dramatic */
+  #download .cta-page-heading {
+    font-size: clamp(3rem, 13.5vw, 4.2rem);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 0;
+    text-shadow: 0 0 80px rgba(59,130,246,0.45);
+  }
+
+  /* Subtitle */
+  #download .cta-page-sub {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.52);
+    max-width: 270px;
+    line-height: 1.55;
+    margin-bottom: 0;
+  }
+
+  /* Glass stats row */
+  .cta-stats {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(147,197,253,0.14);
+    border-radius: 16px;
+    padding: 14px 0;
+    backdrop-filter: blur(14px);
+  }
+  .cta-stat {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+  }
+  .cta-stat-val {
+    font-family: var(--font-display);
+    font-size: 1.05rem; font-weight: 700;
+    color: #fff; line-height: 1;
+  }
+  .cta-stat-lbl {
+    font-size: 0.58rem; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(147,197,253,0.6);
+  }
+  .cta-stat-sep {
+    width: 1px; height: 30px;
+    background: rgba(147,197,253,0.15);
+    flex-shrink: 0;
+  }
+
+  /* Badge — larger + pulsing glow */
+  #download .cta-appstore-btn {
+    position: relative;
+  }
+  #download .cta-appstore-btn::before {
+    content: '';
+    position: absolute; inset: -12px;
+    border-radius: 22px;
+    background: radial-gradient(ellipse, rgba(26,86,219,0.45) 0%, transparent 70%);
+    filter: blur(10px);
+    z-index: -1;
+    animation: btnPulse 2.8s ease-in-out infinite;
+  }
+  #download .appstore-badge-img {
+    width: 196px;
+  }
+
+  /* Fine print */
+  #download .cta-fine {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.22);
+    letter-spacing: 0.08em;
+  }
 }
 
 /* ── Desktop About — Premium Redesign ─────────────────────────────── */

@@ -72,7 +72,7 @@ function drawFrame(idx) {
   const dw = iw * scale, dh = ih * scale;
   const dx = (cw - dw) / 2, dy = (ch - dh) / 2;
   ctx.imageSmoothingEnabled  = true;
-  ctx.imageSmoothingQuality  = 'high';
+  ctx.imageSmoothingQuality  = isMobile ? 'medium' : 'high';
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, cw, ch);
   ctx.drawImage(img, dx, dy, dw, dh);
@@ -481,14 +481,13 @@ function initNavHide() {
 
 // ── Pause on each end page for 2 s before allowing further scroll ─────────
 function initSectionSnap() {
+  if (!lenis) return; // mobile uses native scroll — no snap needed
   let locked = false;
 
   const lockOn = (el) => {
     if (locked || navScrolling) return;
     locked = true;
 
-    // Snap to section top; lock: true blocks user scroll during animation,
-    // force: true runs even if lenis is stopped, onComplete holds for 2 s
     lenis.scrollTo(el, {
       offset: 0,
       duration: 0.35,
@@ -565,11 +564,15 @@ function initScene() {
   resizeCanvas();
   document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
   setSectionHeights();
+  let resizeTimer;
   window.addEventListener('resize', () => {
-    resizeCanvas();
-    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-    setSectionHeights();
-    ScrollTrigger.refresh();
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      resizeCanvas();
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+      setSectionHeights();
+      ScrollTrigger.refresh();
+    }, 120);
   });
 
   initLenis();

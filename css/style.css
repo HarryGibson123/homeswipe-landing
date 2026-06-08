@@ -751,9 +751,10 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
 }
 .appstore-badge-img {
   display: block;
-  width: 200px;
+  width: 240px;
   height: auto;
   border-radius: 12px;
+  mix-blend-mode: multiply; /* white bg becomes transparent on dark page */
 }
 @media (hover: hover) {
   .cta-appstore-btn:hover {
@@ -762,7 +763,7 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
   }
 }
 @media (max-width: 768px) {
-  .appstore-badge-img { width: 170px; }
+  .appstore-badge-img { width: 210px; }
 }
 
 .cta-fine { color: rgba(255,255,255,0.3); }

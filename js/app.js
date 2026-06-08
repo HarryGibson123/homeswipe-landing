@@ -592,6 +592,40 @@ function initSectionSnap() {
       snapTo(next);
     }, { passive: true });
 
+    // ── Scroll-direction gate: hard-lock entry into #features ─────────────
+    // Touch events only fire while a finger is on screen, so a fast fling
+    // carries the page through the zone with no touchstart/touchend at all.
+    // This scroll listener catches that case and forces a snap to #features
+    // the moment it enters the viewport while scrolling down, regardless of
+    // velocity. It uses a one-shot flag so it fires once per approach, not
+    // on every frame while the section is visible.
+    const featuresEl  = sections[0]; // #features is always the first gate
+    let prevScrollY   = window.scrollY;
+    let hasLockedEntry = false;
+
+    window.addEventListener('scroll', () => {
+      const currentY    = window.scrollY;
+      const scrollingDown = currentY > prevScrollY;
+      prevScrollY = currentY;
+
+      const featTop = featuresEl.getBoundingClientRect().top;
+
+      // Re-arm: user has scrolled back to a full viewport above #features
+      if (featTop > lockedVH) hasLockedEntry = false;
+
+      // Hard-lock: #features is crossing into view on a downward scroll
+      if (scrollingDown && !hasLockedEntry && !inZone && !snapping) {
+        // Range: top of #features is between 60% viewport (just entering)
+        // and −20% viewport (slightly overshot) — catches any scroll speed
+        if (featTop <= lockedVH * 0.6 && featTop > -(lockedVH * 0.2)) {
+          hasLockedEntry = true;
+          activeIdx      = 0;
+          inZone         = true;
+          snapTo(0);
+        }
+      }
+    }, { passive: true });
+
     return;
   }
 

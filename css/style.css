@@ -754,7 +754,6 @@ nav { display: flex; align-items: center; justify-content: space-between; positi
   width: 240px;
   height: auto;
   border-radius: 12px;
-  mix-blend-mode: multiply; /* white bg becomes transparent on dark page */
 }
 @media (hover: hover) {
   .cta-appstore-btn:hover {
